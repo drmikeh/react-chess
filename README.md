@@ -2,7 +2,7 @@
 
 A single-player chess game built with React 19 and TypeScript. Play as White against a computer opponent powered by a minimax AI with alpha-beta pruning. No external chess libraries — the engine is written from scratch.
 
-![Chess game screenshot](https://via.placeholder.com/800x500/1a1a2e/ffffff?text=React+Chess)
+![Chess game screenshot](screenshot.png)
 
 ## Features
 
