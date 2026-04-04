@@ -30,6 +30,7 @@ export function initializeGameState(): GameState {
     capturedPieces: { white: [], black: [] },
     promotionPending: null,
     lastMove: null,
+    lastMoveWasCapture: false,
   };
 }
 
@@ -379,5 +380,6 @@ export function makeMove(state: GameState, move: Move): GameState {
     capturedPieces: newCaptured,
     promotionPending: null,
     lastMove: move,
+    lastMoveWasCapture: !!captured,
   };
 }

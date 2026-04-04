@@ -3,6 +3,7 @@ import { Board } from './components/Board';
 import { PromotionDialog } from './components/PromotionDialog';
 import { initializeGameState, getLegalMoves, makeMove } from './chess/engine';
 import { getBestMove } from './chess/ai';
+import { useSound } from './hooks/useSound';
 import type { GameState, PieceType, Position } from './chess/types';
 import './App.css';
 
@@ -49,6 +50,31 @@ function statusMessage(state: GameState, isAiThinking: boolean): { text: string;
 export default function App() {
   const [gameState, setGameState] = useState<GameState>(initializeGameState);
   const [isAiThinking, setIsAiThinking] = useState(false);
+  const { playSound, isMuted, toggleMute } = useSound();
+
+  // Play a sound whenever the board changes after a move
+  useEffect(() => {
+    const move = gameState.lastMove;
+    if (!move) return;
+
+    const { status, lastMoveWasCapture } = gameState;
+
+    if (status === 'checkmate') {
+      playSound('checkmate');
+    } else if (status === 'stalemate') {
+      playSound('stalemate');
+    } else if (move.promotion) {
+      playSound('promote');
+    } else if (move.castling) {
+      playSound('castle');
+    } else if (status === 'check') {
+      playSound('check');
+    } else if (lastMoveWasCapture || move.enPassant) {
+      playSound('capture');
+    } else {
+      playSound('move');
+    }
+  }, [gameState.lastMove, playSound]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const isGameOver = gameState.status === 'checkmate' || gameState.status === 'stalemate';
   const isPlayerTurn = gameState.currentTurn === 'white' && !isAiThinking && !isGameOver;
@@ -130,8 +156,19 @@ export default function App() {
   return (
     <div className="chess-app">
       <header className="chess-header">
-        <h1>♟ Chess</h1>
-        <p className="chess-subtitle">Player vs Computer</p>
+        <div className="chess-header-title">
+          <h1>♟ Chess</h1>
+          <p className="chess-subtitle">Player vs Computer</p>
+        </div>
+        <button
+          className="mute-btn"
+          onClick={toggleMute}
+          type="button"
+          aria-label={isMuted ? 'Unmute sounds' : 'Mute sounds'}
+          title={isMuted ? 'Unmute sounds' : 'Mute sounds'}
+        >
+          {isMuted ? '🔇' : '🔊'}
+        </button>
       </header>
 
       <main className="chess-main">

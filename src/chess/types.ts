@@ -40,4 +40,5 @@ export interface GameState {
   capturedPieces: { white: Piece[]; black: Piece[] };
   promotionPending: { from: Position; to: Position } | null;
   lastMove: Move | null;
+  lastMoveWasCapture: boolean;
 }

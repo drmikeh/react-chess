@@ -9,8 +9,16 @@
 }
 
 .chess-header {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
   margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.chess-header-title {
+  text-align: center;
 }
 
 .chess-header h1 {
@@ -26,6 +34,22 @@
   color: var(--text);
   margin-top: 0.25rem;
 }
+
+.mute-btn {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.35rem 0.6rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.15s, transform 0.1s;
+  color: var(--text);
+}
+
+.mute-btn:hover  { background: var(--accent-bg); }
+.mute-btn:active { transform: scale(0.93); }
 
 .chess-main {
   width: 100%;
