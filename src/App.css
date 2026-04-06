@@ -302,6 +302,69 @@
   line-height: 1.7;
 }
 
+/* ── Evaluation display ──────────────────────────────────────────────────── */
+.eval-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--code-bg);
+}
+
+.eval-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.eval-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.eval-score {
+  font-size: 1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-h);
+  transition: color 0.2s;
+}
+
+.eval-score--white { color: #16a34a; }
+.eval-score--black { color: #dc2626; }
+
+@media (prefers-color-scheme: dark) {
+  .eval-score--white { color: #4ade80; }
+  .eval-score--black { color: #f87171; }
+}
+
+.eval-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: #1a1a2e;
+  overflow: hidden;
+}
+
+.eval-bar-white {
+  height: 100%;
+  background: #f0d9b5;
+  border-radius: 4px 0 0 4px;
+  transition: width 0.4s ease;
+}
+
+.eval-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--text);
+  padding: 0 1px;
+}
+
 /* ── Difficulty control ──────────────────────────────────────────────────── */
 .difficulty-control {
   display: flex;
@@ -470,6 +533,7 @@
   }
 
   .status-badge { flex: 1 1 100%; }
+  .eval-display { flex: 1 1 100%; }
   .difficulty-control { flex: 1 1 100%; }
   .turn-indicator { flex-direction: row; flex: 1 1 auto; }
   .new-game-btn { flex: 0 0 auto; width: auto; padding: 0.5rem 1rem; }

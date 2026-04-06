@@ -160,13 +160,18 @@ function minimax(
   }
 }
 
+export interface BestMoveResult {
+  move: Move;
+  score: number; // centipawns, positive = White advantage
+}
+
 export function getBestMove(
   board: Board,
   color: Color,
   castlingRights: CastlingRights,
   enPassantTarget: Position | null,
   depth = 3,
-): Move | null {
+): BestMoveResult | null {
   const moves = getAllLegalMoves(board, color, castlingRights, enPassantTarget);
   if (moves.length === 0) return null;
 
@@ -200,5 +205,5 @@ export function getBestMove(
     }
   }
 
-  return bestMove;
+  return { move: bestMove, score: bestScore };
 }

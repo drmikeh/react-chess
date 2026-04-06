@@ -3,6 +3,7 @@ import { Board } from './components/Board';
 import { PromotionDialog } from './components/PromotionDialog';
 import { initializeGameState, getLegalMoves, makeMove } from './chess/engine';
 import { getBestMove } from './chess/ai';
+import type { BestMoveResult } from './chess/ai';
 import { useSound } from './hooks/useSound';
 import type { GameState, PieceType, Position } from './chess/types';
 import './App.css';
@@ -40,6 +41,20 @@ function CapturedPieces({ pieces, color }: { pieces: { type: string; color: stri
   );
 }
 
+function formatEval(score: number | null): string {
+  if (score === null) return '—';
+  if (Math.abs(score) > 90000) return score > 0 ? '+M' : '-M';
+  const pawns = score / 100;
+  return (pawns >= 0 ? '+' : '') + pawns.toFixed(1);
+}
+
+function evalBarWhitePct(score: number | null): number {
+  if (score === null) return 50;
+  if (score > 90000) return 95;
+  if (score < -90000) return 5;
+  return Math.min(95, Math.max(5, (score + 1000) / 2000 * 100));
+}
+
 function statusMessage(state: GameState, isAiThinking: boolean): { text: string; type: string } {
   if (state.status === 'checkmate') {
     const winner = state.currentTurn === 'white' ? 'Computer wins!' : 'You win!';
@@ -62,6 +77,7 @@ export default function App() {
   const [gameState, setGameState] = useState<GameState>(initializeGameState);
   const [isAiThinking, setIsAiThinking] = useState(false);
   const [searchDepth, setSearchDepth] = useState(3);
+  const [evalScore, setEvalScore] = useState<number | null>(null);
   const { playSound, isMuted, toggleMute } = useSound();
 
   // Play a sound whenever the board changes after a move
@@ -98,10 +114,11 @@ export default function App() {
     setIsAiThinking(true);
     const timer = setTimeout(() => {
       const { board, castlingRights, enPassantTarget } = gameState;
-      const bestMove = getBestMove(board, 'black', castlingRights, enPassantTarget, searchDepth);
+      const result: BestMoveResult | null = getBestMove(board, 'black', castlingRights, enPassantTarget, searchDepth);
+      if (result) setEvalScore(result.score);
       setGameState(prev => {
         if (prev.currentTurn !== 'black') return prev;
-        return bestMove ? makeMove(prev, bestMove) : prev;
+        return result ? makeMove(prev, result.move) : prev;
       });
       setIsAiThinking(false);
     }, 200);
@@ -160,6 +177,7 @@ export default function App() {
 
   const handleNewGame = useCallback(() => {
     setIsAiThinking(false);
+    setEvalScore(null);
     setGameState(initializeGameState());
   }, []);
 
@@ -217,6 +235,28 @@ export default function App() {
             <div className="move-counter">
               Move {Math.ceil(gameState.moveHistory.length / 2) + (gameState.moveHistory.length % 2 === 0 ? 0 : 0)}
               {' '}({gameState.moveHistory.length} half-moves)
+            </div>
+
+            <div className="eval-display" aria-label="Position evaluation">
+              <div className="eval-header">
+                <span className="eval-label">Evaluation</span>
+                <span
+                  className={`eval-score ${evalScore === null ? '' : evalScore > 0 ? 'eval-score--white' : evalScore < 0 ? 'eval-score--black' : ''}`}
+                  aria-live="polite"
+                >
+                  {isAiThinking ? '…' : formatEval(evalScore)}
+                </span>
+              </div>
+              <div className="eval-bar" role="img" aria-label={`Position: ${formatEval(evalScore)}`}>
+                <div
+                  className="eval-bar-white"
+                  style={{ width: `${evalBarWhitePct(isAiThinking ? null : evalScore)}%` }}
+                />
+              </div>
+              <div className="eval-bar-labels">
+                <span>White</span>
+                <span>Black</span>
+              </div>
             </div>
 
             <div className="difficulty-control">
