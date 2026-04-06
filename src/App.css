@@ -302,6 +302,105 @@
   line-height: 1.7;
 }
 
+/* ── Difficulty control ──────────────────────────────────────────────────── */
+.difficulty-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--code-bg);
+}
+
+.difficulty-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.difficulty-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  font-weight: 600;
+  cursor: default;
+}
+
+.difficulty-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.difficulty-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(
+    to right,
+    var(--accent) calc((var(--depth, 3) - 1) / 7 * 100%),
+    var(--border) calc((var(--depth, 3) - 1) / 7 * 100%)
+  );
+  outline: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.difficulty-slider:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.difficulty-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 1px var(--accent-border);
+  transition: transform 0.1s;
+}
+
+.difficulty-slider:not(:disabled)::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.difficulty-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 1px var(--accent-border);
+}
+
+.difficulty-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text);
+  padding: 0 1px;
+}
+
+.difficulty-warning {
+  font-size: 0.75rem;
+  color: #d97706;
+  margin: 0;
+  line-height: 1.4;
+}
+
+@media (prefers-color-scheme: dark) {
+  .difficulty-warning { color: #fbbf24; }
+}
+
 /* ── Promotion dialog ────────────────────────────────────────────────────── */
 .promo-overlay {
   position: fixed;
@@ -371,6 +470,7 @@
   }
 
   .status-badge { flex: 1 1 100%; }
+  .difficulty-control { flex: 1 1 100%; }
   .turn-indicator { flex-direction: row; flex: 1 1 auto; }
   .new-game-btn { flex: 0 0 auto; width: auto; padding: 0.5rem 1rem; }
   .legend { display: none; }

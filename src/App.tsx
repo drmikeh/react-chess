@@ -7,6 +7,17 @@ import { useSound } from './hooks/useSound';
 import type { GameState, PieceType, Position } from './chess/types';
 import './App.css';
 
+const DIFFICULTY_LABELS: Record<number, string> = {
+  1: 'Beginner',
+  2: 'Easy',
+  3: 'Normal',
+  4: 'Hard',
+  5: 'Expert',
+  6: 'Master',
+  7: 'Insane',
+  8: 'Maximum',
+};
+
 const PIECE_SYMBOLS: Record<string, Record<string, string>> = {
   white: { king: '♔', queen: '♕', rook: '♖', bishop: '♗', knight: '♘', pawn: '♙' },
   black: { king: '♚', queen: '♛', rook: '♜', bishop: '♝', knight: '♞', pawn: '♟' },
@@ -50,6 +61,7 @@ function statusMessage(state: GameState, isAiThinking: boolean): { text: string;
 export default function App() {
   const [gameState, setGameState] = useState<GameState>(initializeGameState);
   const [isAiThinking, setIsAiThinking] = useState(false);
+  const [searchDepth, setSearchDepth] = useState(3);
   const { playSound, isMuted, toggleMute } = useSound();
 
   // Play a sound whenever the board changes after a move
@@ -86,7 +98,7 @@ export default function App() {
     setIsAiThinking(true);
     const timer = setTimeout(() => {
       const { board, castlingRights, enPassantTarget } = gameState;
-      const bestMove = getBestMove(board, 'black', castlingRights, enPassantTarget, 3);
+      const bestMove = getBestMove(board, 'black', castlingRights, enPassantTarget, searchDepth);
       setGameState(prev => {
         if (prev.currentTurn !== 'black') return prev;
         return bestMove ? makeMove(prev, bestMove) : prev;
@@ -205,6 +217,34 @@ export default function App() {
             <div className="move-counter">
               Move {Math.ceil(gameState.moveHistory.length / 2) + (gameState.moveHistory.length % 2 === 0 ? 0 : 0)}
               {' '}({gameState.moveHistory.length} half-moves)
+            </div>
+
+            <div className="difficulty-control">
+              <div className="difficulty-header">
+                <label htmlFor="difficulty-slider" className="difficulty-label">
+                  Difficulty
+                </label>
+                <span className="difficulty-name">{DIFFICULTY_LABELS[searchDepth]}</span>
+              </div>
+              <input
+                id="difficulty-slider"
+                type="range"
+                min={1}
+                max={8}
+                value={searchDepth}
+                onChange={(e) => setSearchDepth(Number(e.target.value))}
+                className="difficulty-slider"
+                style={{ '--depth': searchDepth } as React.CSSProperties}
+                disabled={isAiThinking}
+                aria-label={`Search depth ${searchDepth} — ${DIFFICULTY_LABELS[searchDepth]}`}
+              />
+              <div className="difficulty-range-labels">
+                <span>1</span>
+                <span>8</span>
+              </div>
+              {searchDepth >= 6 && (
+                <p className="difficulty-warning">⚠ May take several seconds per move</p>
+              )}
             </div>
 
             <button className="new-game-btn" onClick={handleNewGame} type="button">
